@@ -67,13 +67,6 @@ equiv(editeur,and(personne,and(not(some(aEcrit,livre)),some(aEdite
 equiv(parent,and(personne,some(aEnfant,anything))).
 
 
-tbox(L) :- setof((X,Y),equiv(X,Y),L).
 
-abi(L) :- setof((X,Y),inst(X,Y),L).
 
-abr(L) :- setof((X,Y,Z),instR(X,Y,Z),L).
-
-premiere_etape(Tbox,Abi,Abr) :- tbox(Tbox),abi(Abi),abr(Abr).
-
-/*program :- premiere_etape(Tbox,Abi,Abr).*/
 
