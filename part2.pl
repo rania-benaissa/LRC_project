@@ -20,27 +20,34 @@ nnf(X,X).
 
 
 /* Verifier si instance existe idf */
-instance(Instance) :- not(var(Instance)), setof(X,iname(X),L), member(Instance,L).
+instance(Instance) :- nonvar(Instance), setof(X,iname(X),L), member(Instance,L).
 
 /* Verifier si un role existe*/
 role(Role) :-  setof(X,rname(X),L), member(Role,L).
 
 /* Verifier si un concept est correct grammaticalement et syntaxiquement*/
 
-is_concept_atom(Concept) :- setof(X,cnamea(X),L), member(Concept,L).
-is_concept_gen(Concept) :- setof(X,cnamena(X),L), member(Concept,L).
+is_concept_atom(Concept) :- nonvar(Concept), setof(X,cnamea(X),L), member(Concept,L).
+is_concept_gen(Concept) :- nonvar(Concept), setof(X,cnamena(X),L), member(Concept,L).
 
-concept(Concept) :-  is_concept_atom(Concept).
+
+/* Si je met pas nonvar(Concept) pour :
+
+ and(X,Y) on aura and(anything,anything)*/
+
+concept(Concept) :- is_concept_atom(Concept).
 concept(Concept) :- is_concept_gen(Concept).
 concept(not(Concept)) :- concept(Concept).
 concept(and(Concept1,Concept2)) :- concept(Concept1), concept(Concept2).
 concept(or(Concept1,Concept2)) :- concept(Concept1), concept(Concept2).
 concept(all(role(_),Concept)) :- concept(Concept).
-concept(some(role(_),Concept)):- concept(Concept).
+concept(some(role(_),Concept)) :- concept(Concept).
 
 
 /* verifier si les propositions sont correctes */
 is_correct_pro1(Instance,Concept) :- instance(Instance), concept(Concept).
+
+is_correct_pro2(Concept1,Concept2) :- concept(Concept1), concept(Concept2).
 
 /*tranformer un concept complexe avec sa definition */
 
@@ -68,11 +75,34 @@ acquisition_prop_type1(Abi,Abi1,Tbox) :- demander_proposition1(Instance,Concept)
                         concat(Abi,[(Instance,Negation)],Abi1).
 
 
+/* On demande a l utilisateur la proposition de type : C1 et C2 subsumés par le vide */
+
+demander_proposition2(Concept1,Concept2) :-
+        write('Entrez le concept 1 :'),nl, 
+        read(Concept1),nl,
+        write('Entrez le concept 2 :'),nl, 
+        read(Concept2).
+
+
+acquisition_prop_type2(Abi,Abi1,Tbox) :- demander_proposition2(Concept1,Concept2),
+                        is_correct_pro2(Concept1,Concept2),
+                        transform_concept(Tbox,Concept1,Prop_atomique1),
+                        transform_concept(Tbox,Concept2,Prop_atomique2),
+                        genere(Nom), /* on genere un nom car on veut une instantiation
+                        dans la negation */
+                        concat(Abi,[(Nom,and(Prop_atomique1,Prop_atomique2))],Abi1).
+
+
+
+
+/* Saisie et traitement des demonstrations */
 
 suite(1,Abi,Abi1,Tbox) :- acquisition_prop_type1(Abi,Abi1,Tbox),!.
-/*suite(2,Abi,Abi1,Tbox) :- acquisition_prop_type2(Abi,Abi1,Tbox),!.
-suite(R,Abi,Abi1,Tbox) :- nl,write('Cette reponse est incorrecte.'),nl,
-saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox).*/
+
+suite(2,Abi,Abi1,Tbox) :- acquisition_prop_type2(Abi,Abi1,Tbox),!.
+
+suite(R,Abi,Abi1,Tbox) :- R \== 1, R \== 2 ,nl,write('Cette reponse est incorrecte.'),nl,
+saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox).
 
 /* nl = new line, Abi1 = instances maj */
 
@@ -80,8 +110,6 @@ saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox) :-
 nl,write('Entrez le numero du type de proposition que vous voulez demontrer :'),nl,
 write('1 - Une instance donnee appartient a un concept donne.'),nl,
 write('2 - Deux concepts n\'ont pas d\'elements en commun.'),nl, read(R), suite(R,Abi,Abi1,Tbox).
-
-
 
 
 deuxieme_etape(Abi,Abi1,Tbox) :- saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox).
