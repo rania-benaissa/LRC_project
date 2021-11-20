@@ -1,9 +1,7 @@
 
 /*  ---- PARTIE 2 ---- */
 
-/* concatenation */
-concat([],L1,L1).
-concat([X|Y],L1,[X|L2]) :- concat(Y,L1,L2).
+
 
 
 /* NEGATION DE CONCEPTS */
@@ -46,13 +44,13 @@ is_correct_pro1(Instance,Concept) :- instance(Instance), concept(Concept).
 
 /*tranformer un concept complexe avec sa definition */
 
-transform_concept(Concept,Concept) :-  is_concept_atom(Concept).
-transform_concept(Concept,X) :- is_concept_gen(Concept),tbox(L), member((Concept,X),L).
-transform_concept(not(Concept),not(X)) :- transform_concept(Concept,X).
-transform_concept(and(Concept1,Concept2),and(X1,X2)) :- transform_concept(Concept1,X1), transform_concept(Concept2,X2).
-transform_concept(or(Concept1,Concept2),or(X1,X2)) :- transform_concept(Concept1,X1), transform_concept(Concept2,X2).
-transform_concept(all(role(_),Concept),all(role(_),X)) :- transform_concept(Concept,X).
-transform_concept(some(role(_),Concept),some(role(_),X)) :- transform_concept(Concept,X).
+transform_concept(_,Concept,Concept) :-  is_concept_atom(Concept).
+transform_concept(Tbox,Concept,X) :- is_concept_gen(Concept), member((Concept,X),Tbox).
+transform_concept(Tbox,not(Concept),not(X)) :- transform_concept(Tbox,Concept,X).
+transform_concept(Tbox,and(Concept1,Concept2),and(X1,X2)) :- transform_concept(Tbox,Concept1,X1), transform_concept(Tbox,Concept2,X2).
+transform_concept(Tbox,or(Concept1,Concept2),or(X1,X2)) :- transform_concept(Tbox,Concept1,X1), transform_concept(Tbox,Concept2,X2).
+transform_concept(Tbox,all(role(_),Concept),all(role(_),X)) :- transform_concept(Tbox,Concept,X).
+transform_concept(Tbox,some(role(_),Concept),some(role(_),X)) :- transform_concept(Tbox,Concept,X).
 
 
 
@@ -65,9 +63,9 @@ demander_proposition1(Instance,Concept) :-
 
 acquisition_prop_type1(Abi,Abi1,Tbox) :- demander_proposition1(Instance,Concept),
                         is_correct_pro1(Instance,Concept),
-                        transform_concept(Concept,Prop_atomique),
+                        transform_concept(Tbox,Concept,Prop_atomique),
                         nnf(not(Prop_atomique),Negation),
-                        concat(Abi,[(Instance,Negation)],Abi1),tbox(Tbox).
+                        concat(Abi,[(Instance,Negation)],Abi1).
 
 
 
@@ -80,9 +78,8 @@ saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox).*/
 
 saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox) :-
 nl,write('Entrez le numero du type de proposition que vous voulez demontrer :'),nl,
-write('1 Une instance donnee appartient a un concept donne.'),nl,
-write('2 Deux concepts n"ont pas d"elements en commun(ils ont une
-intersection vide).'),nl, read(R), suite(R,Abi,Abi1,Tbox).
+write('1 - Une instance donnee appartient a un concept donne.'),nl,
+write('2 - Deux concepts n\'ont pas d\'elements en commun.'),nl, read(R), suite(R,Abi,Abi1,Tbox).
 
 
 
