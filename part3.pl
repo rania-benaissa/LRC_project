@@ -10,14 +10,32 @@ tri_Abox([(I,C)|Q],Lie,Lpt,Li,Lu,[(I,C)|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
 tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
 
 
+/*   1- on verifie d'abord si la liste n'est pas vide
+    - si elle est pas vide on supprime le 1er element 
+    - On genere les assertions selon les regles
+
+-----------------------------------------------------------
+
+    - Si les assertions n existent pas deja on insere les nouvelles assertions
+        - on verifie si y'a pas clash
+        - Si y as pas clash ->  on appelle resolution
+        Sinon -> on ferme le noeud
+    - on choisit une noouvelle assertion
+
+*/
+Lie = [  (a, some(R,C)) ,(a, some(R,C))]
+
+complete_some(Lie,Lpt,Li,Lu,Ls,Abr) :- 
+
+(a, some(R,C)) ->   Abr <- (a,b,R) , Ls <- (b,C)
 
 /* Partie resolution */
-resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- 
+resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- complete_some(Lie,Lpt,Li,Lu,Ls,Abr), resolution(Lie,Lpt,Li,Lu,Ls,Abr).
 
-complete_some(Lie,Lpt,Li,Lu,Ls,Abr),
-transformation_and(Lie,Lpt,Li,Lu,Ls,Abr),
+
+/*transformation_and(Lie,Lpt,Li,Lu,Ls,Abr),
 deduction_all(Lie,Lpt,Li,Lu,Ls,Abr),
-transformation_or(Lie,Lpt,Li,Lu,Ls,Abr),
+transformation_or(Lie,Lpt,Li,Lu,Ls,Abr)*/.
 
 
 /* TROISIEME ETAPE CALL */
