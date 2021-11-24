@@ -5,15 +5,15 @@
 
 /* je prends le 1er element de la liste ABI et c est de type (I,C) */
 
-tri_Abox([],_,_,_,_,_).
+tri_Abox([],[],[],[],[],[]).
 
-tri_Abox([(I,some(R,C))|Q],Lie,Lpt,Li,Lu,Ls) :- concat([(I,some(R,C))],Lie,X), tri_Abox(Q,X,Lpt,Li,Lu,Ls).
-tri_Abox([(I,all(R,C))|Q],Lie,Lpt,Li,Lu,Ls) :- concat([(I,all(R,C))],Lpt,X), tri_Abox(Q,Lie,X,Li,Lu,Ls).
-tri_Abox([(I,and(C1,C2))|Q],Lie,Lpt,Li,Lu,Ls) :-  concat([(I,and(C1,C2))],Li,X), tri_Abox(Q,Lie,Lpt,X,Lu,Ls).
-tri_Abox([(I,or(C1,C2))|Q],Lie,Lpt,Li,Lu,Ls) :-  concat([(I,or(C1,C2))],Lu,X), tri_Abox(Q,Lie,Lpt,Li,X,Ls).
-tri_Abox([(I,C)|Q],Lie,Lpt,Li,Lu,Ls) :-  concat([(I,C)],Ls,X), tri_Abox(Q,Lie,Lpt,Li,Lu,X).
-tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,Ls) :- concat([(I,not(C))],Ls,X), tri_Abox(Q,Lie,Lpt,Li,Lu,X).
-    
+tri_Abox([(I,some(R,C))|Q],[(I,some(R,C))|Lie],Lpt,Li,Lu,Ls) :-  tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+tri_Abox([(I,all(R,C))|Q],Lie,[(I,all(R,C))|Lpt],Li,Lu,Ls) :-  tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+tri_Abox([(I,and(C1,C2))|Q],Lie,Lpt,[(I,and(C1,C2))|Li],Lu,Ls) :-  tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+tri_Abox([(I,or(C1,C2))|Q],Lie,Lpt,Li,[(I,or(C1,C2))|Lu],Ls) :-  tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+tri_Abox([(I,C)|Q],Lie,Lpt,Li,Lu,[(I,C)|Ls]) :-  tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+
 
 /* TROISIEME ETAPE CALL */
 
