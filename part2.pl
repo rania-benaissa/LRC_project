@@ -17,20 +17,16 @@ nnf(X,X).
 
 
 /* Verifier si instance existe idf */
-instance(Instance) :- nonvar(Instance), setof(X,iname(X),L), member(Instance,L).
+instance(Instance) :- atom(Instance), setof(X,iname(X),L), member(Instance,L).
 
 /* Verifier si un role existe*/
 role(Role) :-  setof(X,rname(X),L), member(Role,L).
 
 /* Verifier si un concept est correct grammaticalement et syntaxiquement*/
 
-is_concept_atom(Concept) :- nonvar(Concept), setof(X,cnamea(X),L), member(Concept,L).
-is_concept_gen(Concept) :- nonvar(Concept), setof(X,cnamena(X),L), member(Concept,L).
+is_concept_atom(Concept) :- atom(Concept), setof(X,cnamea(X),L), member(Concept,L).
+is_concept_gen(Concept) :- atom(Concept), setof(X,cnamena(X),L), member(Concept,L).
 
-
-/* Si je met pas nonvar(Concept) pour :
-
- and(X,Y) on aura and(anything,anything)*/
 
 concept(Concept) :- is_concept_atom(Concept).
 concept(Concept) :- is_concept_gen(Concept).
