@@ -1,9 +1,6 @@
 
 /*  ---- PARTIE 2 ---- */
 
-
-
-
 /* NEGATION DE CONCEPTS */
 
 nnf(not(and(C1,C2)),or(NC1,NC2)):- nnf(not(C1),NC1), nnf(not(C2),NC2),!.
