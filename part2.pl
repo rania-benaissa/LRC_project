@@ -52,6 +52,13 @@ transform_concept(Tbox,or(Concept1,Concept2),or(X1,X2)) :- transform_concept(Tbo
 transform_concept(Tbox,all(role(_),Concept),all(role(_),X)) :- transform_concept(Tbox,Concept,X).
 transform_concept(Tbox,some(role(_),Concept),some(role(_),X)) :- transform_concept(Tbox,Concept,X).
 
+/*tranformer tous les  concepts complexes de l ABI  par leurs definition */
+transform_all(_,[],[]).
+transform_all(Tbox,[(I,C)|Q],[(I,Prop_atomique)|Abi1]) :- transform_concept(Tbox,C,Prop_atomique),
+                                                     
+                                                          transform_all(Tbox,Q,Abi1).
+                                                
+
 
 
 /* On demande a l utilisateur la proposition de type : I:C */
@@ -63,9 +70,11 @@ demander_proposition1(Instance,Concept) :-
 
 acquisition_prop_type1(Abi,Abi1,Tbox) :- demander_proposition1(Instance,Concept),
                         is_correct_pro1(Instance,Concept),
-                        transform_concept(Tbox,Concept,Prop_atomique),
-                        nnf(not(Prop_atomique),Negation),
-                        concat(Abi,[(Instance,Negation)],Abi1).
+                        transform_all(Tbox,Abi,AbiA), /* si je change de base et que 
+                        dans la ABi de la base y a des concepts non atomiques*/
+                        transform_concept(Tbox,not(Concept),Prop_atomique),
+                        nnf(Prop_atomique,Negation),
+                        concat(AbiA,[(Instance,Negation)],Abi1).
 
 
 /* On demande a l utilisateur la proposition de type : C1 et C2 subsumés par le vide */
@@ -79,11 +88,13 @@ demander_proposition2(Concept1,Concept2) :-
 
 acquisition_prop_type2(Abi,Abi1,Tbox) :- demander_proposition2(Concept1,Concept2),
                         is_correct_pro2(Concept1,Concept2),
+                        transform_all(Tbox,Abi,AbiA), /* si je change de base et que 
+                        dans la ABi de la base y a des concepts non atomiques*/
                         transform_concept(Tbox,Concept1,Prop_atomique1),
                         transform_concept(Tbox,Concept2,Prop_atomique2),
                         genere(Nom), /* on genere un nom car on veut une instantiation
                         dans la negation */
-                        concat(Abi,[(Nom,and(Prop_atomique1,Prop_atomique2))],Abi1).
+                        concat(AbiA,[(Nom,and(Prop_atomique1,Prop_atomique2))],Abi1).
 
 
 

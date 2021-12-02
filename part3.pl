@@ -23,35 +23,44 @@ tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,
     - on choisit une noouvelle assertion
 
 */
-Lie = [  (a, some(R,C)) ,(a, some(R,C))]
 
-complete_some(Lie,Lpt,Li,Lu,Ls,Abr) :- 
+complete_some([],_,_,_,_,_).
 
-(a, some(R,C)) ->   Abr <- (a,b,R) , Ls <- (b,C)
+
+complete_some([(Q,some(R,C))|Q],Lpt,Li,Lu,Ls,Abr)  :-  complete_some(Q,Lpt,Li,Lu,Ls,Abr).
+/*complete_some([(I,some(R,C))|Q],Lpt,Li,Lu,[(B,C)|Ls],[(I,B,R)|Abr])  :- genere(B), complete_some(Q,Lpt,Li,Lu,Ls,Abr).*/
 
 /* Partie resolution */
-resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- complete_some(Lie,Lpt,Li,Lu,Ls,Abr), resolution(Lie,Lpt,Li,Lu,Ls,Abr).
+resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- complete_some(Lie,Lpt,Li,Lu,Ls,Abr).
+
 
 
 /*transformation_and(Lie,Lpt,Li,Lu,Ls,Abr),
 deduction_all(Lie,Lpt,Li,Lu,Ls,Abr),
-transformation_or(Lie,Lpt,Li,Lu,Ls,Abr)*/.
+transformation_or(Lie,Lpt,Li,Lu,Ls,Abr).*/
 
 
 /* TROISIEME ETAPE CALL */
 
-/*  ABI1 = liste de ( instance, concept) etendue */
-/*  ABR = liste de ( instance,instance, role) */
-
 troisieme_etape(Abi,Abr) :- write(Abi), nl,nl,write(Abr),nl,nl,
-tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),
-resolution(Lie,Lpt,Li,Lu,Ls,Abr),
+tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),!,
 write(Lie),nl,
 write(Lpt),nl,
 write(Li),nl,
 write(Lu),nl,
-write(Ls),nl.
-/*
+write(Ls),nl,
+write(Abr),nl
+,
+write("------------------"),nl,
 resolution(Lie,Lpt,Li,Lu,Ls,Abr),
+write("resolution part"),nl,
+write(Lie),nl,
+write(Lpt),nl,
+write(Li),nl,
+write(Lu),nl,
+write(Ls),nl,
+write(Abr),nl.
+
+/*
 nl,write('Youpiiiiii, on a demontre la
 proposition initiale !!!')*/
