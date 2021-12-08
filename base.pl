@@ -9,6 +9,7 @@ iname(david).
 iname(sonnets).
 iname(vinci).
 iname(joconde).
+/*iname(monalisa).*/
 
 /* idf des roles */
 
@@ -47,6 +48,7 @@ inst(joconde,objet).
 instR(michelAnge, david, aCree).
 instR(michelAnge, sonnets, aEcrit).
 instR(vinci, joconde, aCree).
+/*instR(vinci, monalisa, aCree).*/
 
 
 
