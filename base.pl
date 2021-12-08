@@ -33,12 +33,10 @@ cnamena(auteur).
 cnamena(editeur).
 cnamena(sculpteur).
 cnamena(parent).
-cnamena(thing).
 
 /* instanciation des concepts */
 
 inst(michelAnge,personne).
-inst(david,thing).
 inst(david,sculpture).
 inst(sonnets,livre).
 inst(vinci,personne).
@@ -68,8 +66,6 @@ equiv(editeur,and(personne,and(not(some(aEcrit,livre)),some(aEdite
 /* DEF ENFANT */
 equiv(parent,and(personne,some(aEnfant,anything))).
 
-
-equiv(thing,some(aEcrit,livre)).
 
 
 

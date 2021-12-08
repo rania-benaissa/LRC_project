@@ -33,8 +33,8 @@ concept(Concept) :- is_concept_gen(Concept).
 concept(not(Concept)) :- concept(Concept).
 concept(and(Concept1,Concept2)) :- concept(Concept1), concept(Concept2).
 concept(or(Concept1,Concept2)) :- concept(Concept1), concept(Concept2).
-concept(all(role(_),Concept)) :- concept(Concept).
-concept(some(role(_),Concept)) :- concept(Concept).
+concept(all(R,Concept)) :- role(R),concept(Concept).
+concept(some(R,Concept)) :- role(R),concept(Concept).
 
 
 /* verifier si les propositions sont correctes */
@@ -49,8 +49,8 @@ transform_concept(Tbox,Concept,X) :- is_concept_gen(Concept), member((Concept,X)
 transform_concept(Tbox,not(Concept),not(X)) :- transform_concept(Tbox,Concept,X).
 transform_concept(Tbox,and(Concept1,Concept2),and(X1,X2)) :- transform_concept(Tbox,Concept1,X1), transform_concept(Tbox,Concept2,X2).
 transform_concept(Tbox,or(Concept1,Concept2),or(X1,X2)) :- transform_concept(Tbox,Concept1,X1), transform_concept(Tbox,Concept2,X2).
-transform_concept(Tbox,all(role(_),Concept),all(role(_),X)) :- transform_concept(Tbox,Concept,X).
-transform_concept(Tbox,some(role(_),Concept),some(role(_),X)) :- transform_concept(Tbox,Concept,X).
+transform_concept(Tbox,all(R,Concept),all(R,X)) :- role(R), transform_concept(Tbox,Concept,X).
+transform_concept(Tbox,some(R,Concept),some(R,X)) :- role(R), transform_concept(Tbox,Concept,X).
 
 /*tranformer tous les  concepts complexes de l ABI  par leurs definition */
 transform_all(_,[],[]).
