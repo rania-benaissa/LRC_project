@@ -50,8 +50,6 @@ instR(michelAnge, sonnets, aEcrit).
 instR(vinci, joconde, aCree).
 /*instR(vinci, monalisa, aCree).*/
 
-
-
 /* TBOX */
 
 /* DEF SCULPTEUR */

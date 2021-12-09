@@ -11,6 +11,19 @@ tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,
 
 
 
+/* affiche l evolution d'une d'un etat */
+
+affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,
+Lpt2, Li2, Lu2, Abr2) :-
+
+    write("Etat de depart"),nl,
+
+
+    write("Etat de d'arrivée "),nl,
+
+
+
+
 /* je parcours toutes les listes si y a aucun clash -> return true else false*/
 test_clash([]).
 test_clash([T|Q]):- not(member(not(T),Q)), test_clash(Q).
@@ -87,7 +100,11 @@ evolue((I,C), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
 
 
 
-/* Ajoute une liste de nouvelles assertions de concepts a la bonne liste */
+/* Ajoute une liste de parcours la liste des nouvelles assertions
+de concepts et les ajoute a la bonne liste */
+
+
+evolue_all([],Lie, Lpt, Li, Lu, Ls,Lie, Lpt, Li, Lu, Ls).
 
 evolue_all([T|Q], Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
 
@@ -128,7 +145,6 @@ complete_some(Lie,Lpt,Li,Lu,Ls,Abr) :-
     write(Abr1),nl
 .
 
-
 /* Application de la regle de qlq soit */
 deduction_all(Lie,Lpt,Li,Lu,Ls,Abr) :- 
             
@@ -142,6 +158,7 @@ deduction_all(Lie,Lpt,Li,Lu,Ls,Abr) :-
 
     /* je met toutes les listes ensemble */
     flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
+
 
     /* test de clash */
     test_clash(Y),
@@ -202,16 +219,16 @@ transformation_or(Lie,Lpt,Li,Lu,Ls,Abr) :-
     write(Abr),nl,
 
     /* Creation de la seconde branche */
-    evolue((I,C2),Lie, Lpt, Li,Q,  Ls, Lie1, Lpt1, Li1, Lu1, Ls1), 
+    evolue((I,C2),Lie, Lpt, Li,Q,  Ls, Lie2, Lpt2, Li2, Lu2, Ls2), 
 
     /* test de clash */
     test_clash(Y),
-    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr),nl,
-    write(Lie1),nl,
-    write(Lpt1),nl,
-    write(Li1),nl,
-    write(Lu1),nl,
-    write(Ls1),nl,
+    resolution(Lie2,Lpt2,Li2,Lu2,Ls2,Abr),nl,
+    write(Lie2),nl,
+    write(Lpt2),nl,
+    write(Li2),nl,
+    write(Lu2),nl,
+    write(Ls2),nl,
     write(Abr),nl
 .
 
