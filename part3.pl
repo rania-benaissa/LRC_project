@@ -10,19 +10,141 @@ tri_Abox([(I,C)|Q],Lie,Lpt,Li,Lu,[(I,C)|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
 tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
 
 
+/* affiche un element en infixé -> ici il faut ajouter le !*/
+
+
+affiche(not(Concept),Res) :- affiche(Concept,Res1),
+                             atom_concat("\u00AC",Res1,Res).
+
+
+affiche(and(Concept1,Concept2),Res) :- affiche(Concept1,Res1), 
+                                    affiche(Concept2,Res2),
+                                    atom_concat(Res1," \u2293 ",Res3),
+                                    atom_concat("(",Res3,Res4),
+                                    atom_concat(Res2,")",Res5),
+                                    atom_concat(Res4,Res5,Res).
+
+affiche(or(Concept1,Concept2),Res) :- affiche(Concept1,Res1), 
+                                      affiche(Concept2,Res2),
+                                      atom_concat(Res1," \u2294 ",Res3),
+                                      atom_concat("(",Res3,Res4),
+                                      atom_concat(Res2,")",Res5),
+                                      atom_concat(Res4,Res5,Res).
+                                      
+affiche(all(R,Concept),Res) :- affiche(R,Res1), 
+                               affiche(Concept,Res2),
+                               atom_concat("\u2200",Res1,Res3),
+                               atom_concat(".",Res2,Res4),
+                               atom_concat(Res3,Res4,Res).
+
+
+affiche(some(R,Concept),Res) :- affiche(R,Res1), 
+                                affiche(Concept,Res2),
+                                atom_concat("\u2203",Res1,Res3),
+                                atom_concat(".",Res2,Res4),
+                                atom_concat(Res3,Res4,Res).
+
+
+/* affiche les concepts atomic en chaines de cars */
+affiche(anything,"\u22A4").
+affiche(nothing,"\u22A5").
+affiche(Concept,Res) :- atom_string(Concept,Res).
+
+
+/* affiche une des listes Abi en infixé */
+afficheAbi([]).
+
+afficheAbi([(A,B)|Q]) :- 
+
+    affiche(B,Inf),
+
+    atom_concat(A, " : ",Res1),
+    atom_concat(Res1, Inf,Res),
+    write(Res),write(","),tab(3),
+    afficheAbi(Q)
+
+.
+
+
+/* affiche Abr en infixé */
+
+afficheAbr([]).
+afficheAbr([(A,B,R)|Q]) :- 
+
+    atom_concat("<",A,Res1),
+
+    atom_concat(Res1, ",",Res2),
+
+    atom_concat(B, ">",Res3),
+    atom_concat(Res2,Res3,Res4),
+    atom_concat(Res4, ":",Res5),
+    atom_concat(Res5,R,Res),
+    write(Res),write(","),tab(3),
+    afficheAbr(Q)
+
+.
+
+
+/* affiche la TBox et la Abox */
+
+
+afficheList([]):- write("vide").
+
+afficheList(L) :- L = [(_,_,_)|_], afficheAbr(L).
+
+afficheList(L) :- L = [(_,_)|_], afficheAbi(L).
+
+
+
 
 /* affiche l evolution d'une d'un etat */
 
-affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,
-Lpt2, Li2, Lu2, Abr2) :-
+affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2, Abr2,Node1,Node2) :-
 
-    write("Etat de depart"),nl,
+    nl,write("Etat de depart  = "),write(Node1),nl,nl,
+
+    write("Liste Lie = "),
+    afficheList(Lie1),nl,nl,
+
+    write("Liste Lpt = "),
+    afficheList(Lpt1),nl,nl,
+
+    write("Liste Li = "),
+    afficheList(Li1),nl,nl,
+
+    write("Liste Lu = "),
+    afficheList(Lu1),nl,nl,
+
+    write("Liste Ls = "),
+    afficheList(Ls1),nl,nl,
+
+    write("Liste Abr = "),
+    afficheList(Abr1),nl,nl,
+
+    nl,nl,write("Etat d'arrive  = "),write(Node2),nl,nl,
+    
+    write("Liste Lie = "),
+    afficheList(Lie2),nl,nl,
+
+    write("Liste Lpt = "),
+    afficheList(Lpt2),nl,nl,
+
+    write("Liste Li = "),
+    afficheList(Li2),nl,nl,
+
+    write("Liste Lu = "),
+   afficheList(Lu2),nl,nl,
+
+    write("Liste Ls = "),
+    afficheList(Ls2),nl,nl,
 
 
-    write("Etat de d'arrivée "),nl,
+    write("Liste Abr = "),
+    afficheList(Abr2),nl,nl
 
+.
 
-
+    
 
 /* je parcours toutes les listes si y a aucun clash -> return true else false*/
 test_clash([]).
@@ -132,17 +254,19 @@ complete_some(Lie,Lpt,Li,Lu,Ls,Abr) :-
     /* je met toutes les listes ensemble */
     flatten([Lie1, Lpt1, Li1, Lu1, Ls1,Abr1],Y),
 
+    genere_node(Node1),
+    genere_node(Node2),
+    
+    
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
+    Lpt1, Li1, Lu1, Abr1,Node1,Node2),
+
+
     /* test de clash */
     test_clash(Y),
-    write("resolution part"),
     
-    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr1),nl,
-    write(Lie1),nl,
-    write(Lpt1),nl,
-    write(Li1),nl,
-    write(Lu1),nl,
-    write(Ls1),nl,
-    write(Abr1),nl
+    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr1)
+    
 .
 
 /* Application de la regle de qlq soit */
@@ -159,24 +283,22 @@ deduction_all(Lie,Lpt,Li,Lu,Ls,Abr) :-
     /* je met toutes les listes ensemble */
     flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
 
+    genere_node(Node1),
+    genere_node(Node2),
+
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
+    Lpt1, Li1, Lu1, Abr,Node1,Node2),
 
     /* test de clash */
     test_clash(Y),
-
-    write("resolution part"),
     
-    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr),nl,
-    write(Lie1),nl,
-    write(Lpt1),nl,
-    write(Li1),nl,
-    write(Lu1),nl,
-    write(Ls1),nl,
-    write(Abr),nl
+    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr)
 .
 
 
 /* transformation ET */
 transformation_and(Lie,Lpt,Li,Lu,Ls,Abr) :- 
+
     /* enleve la tete de liste de Li et retourne le reste de la liste dans Q*/
     enleve((I,and(C1,C2)),Li,Q),
 
@@ -186,16 +308,15 @@ transformation_and(Lie,Lpt,Li,Lu,Ls,Abr) :-
     
     /* test de clash */
     flatten([Lie2, Lpt2, Li2, Lu2, Ls2],Y),
+
+    genere_node(Node1),
+    genere_node(Node2),
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls2, Lie2,
+    Lpt2, Li2, Lu2, Abr,Node1,Node2),
+
     test_clash(Y),
-    write("resolution part"),
-    
-    resolution(Lie2,Lpt2,Li2,Lu2,Ls2,Abr),nl,
-    write(Lie2),nl,
-    write(Lpt2),nl,
-    write(Li2),nl,
-    write(Lu2),nl,
-    write(Ls2),nl,
-    write(Abr),nl
+
+    resolution(Lie2,Lpt2,Li2,Lu2,Ls2,Abr)
 .
 
 /* tranformation or */
@@ -209,27 +330,32 @@ transformation_or(Lie,Lpt,Li,Lu,Ls,Abr) :-
 
     /* test de clash */
     flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
-    test_clash(Y),
-    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr),nl,
-    write(Lie1),nl,
-    write(Lpt1),nl,
-    write(Li1),nl,
-    write(Lu1),nl,
-    write(Ls1),nl,
-    write(Abr),nl,
 
+    genere_node(Node1),
+    genere_node(Node2),
+
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
+    Lpt1, Li1, Lu1, Abr,Node1,Node2),
+
+    test_clash(Y),
+
+    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr),
+    
+    
     /* Creation de la seconde branche */
     evolue((I,C2),Lie, Lpt, Li,Q,  Ls, Lie2, Lpt2, Li2, Lu2, Ls2), 
 
+    
+
+    genere_node(Node3),
+
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls2, Lie2,
+    Lpt2, Li2, Lu2, Abr,Node1,Node3),
+
     /* test de clash */
     test_clash(Y),
-    resolution(Lie2,Lpt2,Li2,Lu2,Ls2,Abr),nl,
-    write(Lie2),nl,
-    write(Lpt2),nl,
-    write(Li2),nl,
-    write(Lu2),nl,
-    write(Ls2),nl,
-    write(Abr),nl
+    resolution(Lie2,Lpt2,Li2,Lu2,Ls2,Abr)
+  
 .
 
 
@@ -243,18 +369,11 @@ resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- member(_,Lpt),deduction_all(Lie,Lpt,Li,Lu,Ls
 
 /* TROISIEME ETAPE CALL */
 
-troisieme_etape(Abi,Abr) :- write(Abi), nl,nl,write(Abr),nl,nl,
-    tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),!,
-    write(Lie),nl,
-    write(Lpt),nl,
-    write(Li),nl,
-    write(Lu),nl,
-    write(Ls),nl,
-    write(Abr),nl,
-    write("------------------"),nl,
-    resolution(Lie,Lpt,Li,Lu,Ls,Abr)
-.
+troisieme_etape(Abi,Abr) :-
 
-/*
-nl,write('Youpiiiiii, on a demontre la
-proposition initiale !!!')*/
+    tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),!,
+
+    resolution(Lie,Lpt,Li,Lu,Ls,Abr),
+
+    nl,write('Youpiiiiii, on a demontre la
+    proposition initiale !!!').

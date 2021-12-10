@@ -1,6 +1,6 @@
 /* including files */
 :- [base].
-:- [fonctions].
+:- [pred_utiles].
 :- [part1].
 :- [part2].
 :- [part3].
