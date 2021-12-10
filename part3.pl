@@ -97,11 +97,11 @@ afficheList(L) :- L = [(_,_)|_], afficheAbi(L).
 
 
 
-/* affiche l evolution d'une d'un etat */
+/* affiche l'evolution d'un etat à un autre*/
 
-affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2, Abr2,Node1,Node2) :-
+affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2, Abr2) :-
 
-    nl,write("Etat de depart  = "),write(Node1),nl,nl,
+    nl,write("Etat de depart  = "),nl,nl,
 
     write("Liste Lie = "),
     afficheList(Lie1),nl,nl,
@@ -121,7 +121,7 @@ affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2
     write("Liste Abr = "),
     afficheList(Abr1),nl,nl,
 
-    nl,nl,write("Etat d'arrive  = "),write(Node2),nl,nl,
+    nl,nl,write("Etat d'arrive  = "),nl,nl,
     
     write("Liste Lie = "),
     afficheList(Lie2),nl,nl,
@@ -140,7 +140,8 @@ affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2
 
 
     write("Liste Abr = "),
-    afficheList(Abr2),nl,nl
+    afficheList(Abr2),nl,nl,!
+
 
 .
 
@@ -148,14 +149,17 @@ affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2
 
 /* je parcours toutes les listes si y a aucun clash -> return true else false*/
 test_clash([]).
-test_clash([T|Q]):- not(member(not(T),Q)), test_clash(Q).
+test_clash(L):- is_clash(L,L).
+
+is_clash([],_).
+is_clash([(I,C)|Q],L):- not(member((I,not(C)),L)), is_clash(Q,L).
 
 
 
 /* rajoute la nouvelle assertion a la liste adequate seulement si elle n'y 
 existe pas deja */
-add_new_element(X,L1,L2) :- not(member(X,L1)), concat([X],L1,L2).
-add_new_element(X,L1,L2) :- member(X,L1), concat([],L1,L2).
+add_new_element(X,L1,L2) :- not(member(X,L1)), concat([X],L1,L2),!.
+add_new_element(X,L1,L2) :- member(X,L1), concat([],L1,L2),!.
 
 
 get_all_new_elts(_,[],[]).
@@ -171,7 +175,7 @@ evolue((I,some(R,C)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
     concat([],Lpt,Lpt1),
     concat([],Li,Li1),
     concat([],Lu,Lu1),
-    concat([],Ls,Ls1)
+    concat([],Ls,Ls1),!
 .
 
 evolue((I,all(R,C)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
@@ -180,7 +184,7 @@ evolue((I,all(R,C)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
     add_new_element((I,all(R,C)),Lpt,Lpt1),
     concat([],Li,Li1),
     concat([],Lu,Lu1),
-    concat([],Ls,Ls1)
+    concat([],Ls,Ls1),!
 .
 
 evolue((I,and(C1,C2)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
@@ -189,7 +193,7 @@ evolue((I,and(C1,C2)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
     concat([],Lpt,Lpt1),
     add_new_element((I,and(C1,C2)),Li,Li1),
     concat([],Lu,Lu1),
-    concat([],Ls,Ls1)
+    concat([],Ls,Ls1),!
 .
 
 evolue((I,or(C1,C2)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
@@ -198,7 +202,7 @@ evolue((I,or(C1,C2)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
     concat([],Lpt,Lpt1),
     concat([],Li,Li1),
     add_new_element((I,or(C1,C2)),Lu,Lu1),
-    concat([],Ls,Ls1)
+    concat([],Ls,Ls1),!
 .
 
 
@@ -208,7 +212,7 @@ evolue((I,not(C)), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
     concat([],Lpt,Lpt1),
     concat([],Li,Li1),
     concat([],Lu,Lu1),
-    add_new_element((I,not(C)),Ls,Ls1)
+    add_new_element((I,not(C)),Ls,Ls1),!
 .
 
 evolue((I,C), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
@@ -217,7 +221,7 @@ evolue((I,C), Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
     concat([],Lpt,Lpt1),
     concat([],Li,Li1),
     concat([],Lu,Lu1),
-    add_new_element((I,C),Ls,Ls1)
+    add_new_element((I,C),Ls,Ls1),!
 .
 
 
@@ -232,7 +236,7 @@ evolue_all([T|Q], Lie, Lpt, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1) :-
 
 evolue(T, Lie, Lpt, Li, Lu, Ls, Lie2, Lpt2, Li2, Lu2, Ls2),
 
-evolue_all(Q, Lie2, Lpt2, Li2, Lu2, Ls2, Lie1, Lpt1, Li1, Lu1, Ls1).
+evolue_all(Q, Lie2, Lpt2, Li2, Lu2, Ls2, Lie1, Lpt1, Li1, Lu1, Ls1),!.
 
 
 /* Application de la regle d'il existe */
@@ -251,15 +255,15 @@ complete_some(Lie,Lpt,Li,Lu,Ls,Abr) :-
     /* ajout de des nouvelles assertions de roles */
     concat([(I,B,R)],Abr,Abr1), 
 
-    /* je met toutes les listes ensemble */
-    flatten([Lie1, Lpt1, Li1, Lu1, Ls1,Abr1],Y),
-
-    genere_node(Node1),
-    genere_node(Node2),
     
+ 
     
     affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
-    Lpt1, Li1, Lu1, Abr1,Node1,Node2),
+    Lpt1, Li1, Lu1, Abr1),
+
+    /* je met toutes les listes ensemble */
+    flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
+
 
 
     /* test de clash */
@@ -280,14 +284,13 @@ deduction_all(Lie,Lpt,Li,Lu,Ls,Abr) :-
 
     evolue_all(New_assertions, Lie, Q, Li, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1),
 
-    /* je met toutes les listes ensemble */
+   
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
+    Lpt1, Li1, Lu1, Abr),
+
+     /* je met toutes les listes ensemble */
     flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
 
-    genere_node(Node1),
-    genere_node(Node2),
-
-    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
-    Lpt1, Li1, Lu1, Abr,Node1,Node2),
 
     /* test de clash */
     test_clash(Y),
@@ -305,14 +308,13 @@ transformation_and(Lie,Lpt,Li,Lu,Ls,Abr) :-
     /* ajout de des nouvelles assertions SI elles existent */
     evolue((I,C1), Lie, Lpt, Q, Lu, Ls, Lie1, Lpt1, Li1, Lu1, Ls1),
     evolue((I,C2), Lie1, Lpt1, Li1, Lu1, Ls1, Lie2, Lpt2, Li2, Lu2, Ls2),
+
+
+    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls2, Lie2,
+    Lpt2, Li2, Lu2, Abr),
     
     /* test de clash */
     flatten([Lie2, Lpt2, Li2, Lu2, Ls2],Y),
-
-    genere_node(Node1),
-    genere_node(Node2),
-    affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls2, Lie2,
-    Lpt2, Li2, Lu2, Abr,Node1,Node2),
 
     test_clash(Y),
 
@@ -323,37 +325,35 @@ transformation_and(Lie,Lpt,Li,Lu,Ls,Abr) :-
 transformation_or(Lie,Lpt,Li,Lu,Ls,Abr) :- 
 
     /* enleve la tete de liste de Lu et retourne le reste de la liste dans Q*/
-    enleve((I,or(C1,C2)),Lu,Q),
+    enleve((I,or(C1,_)),Lu,Q),
 
     /* creation de la 1ere branche */
     evolue((I,C1),Lie, Lpt, Li,Q, Ls, Lie1, Lpt1, Li1, Lu1, Ls1), 
 
-    /* test de clash */
-    flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
-
-    genere_node(Node1),
-    genere_node(Node2),
 
     affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
-    Lpt1, Li1, Lu1, Abr,Node1,Node2),
+    Lpt1, Li1, Lu1, Abr),
 
+
+    /* test de clash */
+    flatten([Lie1, Lpt1, Li1, Lu1, Ls1],Y),
     test_clash(Y),
 
-    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr),
+    resolution(Lie1,Lpt1,Li1,Lu1,Ls1,Abr).
     
-    
+transformation_or(Lie,Lpt,Li,Lu,Ls,Abr) :- 
+
+
+    enleve((I,or(_,C2)),Lu,Q),
     /* Creation de la seconde branche */
     evolue((I,C2),Lie, Lpt, Li,Q,  Ls, Lie2, Lpt2, Li2, Lu2, Ls2), 
 
-    
-
-    genere_node(Node3),
-
     affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls2, Lie2,
-    Lpt2, Li2, Lu2, Abr,Node1,Node3),
+    Lpt2, Li2, Lu2, Abr),
 
     /* test de clash */
-    test_clash(Y),
+    flatten([Lie2, Lpt2, Li2, Lu2, Ls2],Y1),
+    test_clash(Y1),
     resolution(Lie2,Lpt2,Li2,Lu2,Ls2,Abr)
   
 .
@@ -373,7 +373,7 @@ troisieme_etape(Abi,Abr) :-
 
     tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),!,
 
-    resolution(Lie,Lpt,Li,Lu,Ls,Abr),
+    not(resolution(Lie,Lpt,Li,Lu,Ls,Abr)),
 
     nl,write('Youpiiiiii, on a demontre la
     proposition initiale !!!').
