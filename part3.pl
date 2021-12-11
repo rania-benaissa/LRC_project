@@ -2,19 +2,19 @@
 
 tri_Abox([],[],[],[],[],[]).
 
-tri_Abox([(I,some(R,C))|Q],[(I,some(R,C))|Lie],Lpt,Li,Lu,Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
-tri_Abox([(I,all(R,C))|Q],Lie,[(I,all(R,C))|Lpt],Li,Lu,Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
-tri_Abox([(I,and(C1,C2))|Q],Lie,Lpt,[(I,and(C1,C2))|Li],Lu,Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
-tri_Abox([(I,or(C1,C2))|Q],Lie,Lpt,Li,[(I,or(C1,C2))|Lu],Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
-tri_Abox([(I,C)|Q],Lie,Lpt,Li,Lu,[(I,C)|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
-tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls).
+tri_Abox([(I,some(R,C))|Q],[(I,some(R,C))|Lie],Lpt,Li,Lu,Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls),!.
+tri_Abox([(I,all(R,C))|Q],Lie,[(I,all(R,C))|Lpt],Li,Lu,Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls),!.
+tri_Abox([(I,and(C1,C2))|Q],Lie,Lpt,[(I,and(C1,C2))|Li],Lu,Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls),!.
+tri_Abox([(I,or(C1,C2))|Q],Lie,Lpt,Li,[(I,or(C1,C2))|Lu],Ls) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls),!.
+tri_Abox([(I,C)|Q],Lie,Lpt,Li,Lu,[(I,C)|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls),!.
+tri_Abox([(I,not(C))|Q],Lie,Lpt,Li,Lu,[(I,not(C))|Ls]) :- tri_Abox(Q,Lie,Lpt,Li,Lu,Ls),!.
 
 
 /* affiche un element en infixé -> ici il faut ajouter le !*/
 
 
 affiche(not(Concept),Res) :- affiche(Concept,Res1),
-                             atom_concat("\u00AC",Res1,Res).
+                             atom_concat("\u00AC",Res1,Res),!.
 
 
 affiche(and(Concept1,Concept2),Res) :- affiche(Concept1,Res1), 
@@ -22,27 +22,27 @@ affiche(and(Concept1,Concept2),Res) :- affiche(Concept1,Res1),
                                     atom_concat(Res1," \u2293 ",Res3),
                                     atom_concat("(",Res3,Res4),
                                     atom_concat(Res2,")",Res5),
-                                    atom_concat(Res4,Res5,Res).
+                                    atom_concat(Res4,Res5,Res),!.
 
 affiche(or(Concept1,Concept2),Res) :- affiche(Concept1,Res1), 
                                       affiche(Concept2,Res2),
                                       atom_concat(Res1," \u2294 ",Res3),
                                       atom_concat("(",Res3,Res4),
                                       atom_concat(Res2,")",Res5),
-                                      atom_concat(Res4,Res5,Res).
+                                      atom_concat(Res4,Res5,Res),!.
                                       
 affiche(all(R,Concept),Res) :- affiche(R,Res1), 
                                affiche(Concept,Res2),
                                atom_concat("\u2200",Res1,Res3),
                                atom_concat(".",Res2,Res4),
-                               atom_concat(Res3,Res4,Res).
+                               atom_concat(Res3,Res4,Res),!.
 
 
 affiche(some(R,Concept),Res) :- affiche(R,Res1), 
                                 affiche(Concept,Res2),
                                 atom_concat("\u2203",Res1,Res3),
                                 atom_concat(".",Res2,Res4),
-                                atom_concat(Res3,Res4,Res).
+                                atom_concat(Res3,Res4,Res),!.
 
 
 /* affiche les concepts atomic en chaines de cars */
@@ -100,7 +100,7 @@ afficheList(L) :- L = [(_,_)|_], afficheAbi(L).
 /* affiche l'evolution d'un etat à un autre*/
 
 affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2, Abr2) :-
-
+    write("######################################################"),
     nl,write("Etat de depart  = "),nl,nl,
 
     write("Liste Lie = "),
@@ -140,7 +140,8 @@ affiche_evolution_Abox(Ls1, Lie1, Lpt1, Li1, Lu1, Abr1, Ls2, Lie2,Lpt2, Li2, Lu2
 
 
     write("Liste Abr = "),
-    afficheList(Abr2),nl,nl,!
+    afficheList(Abr2),nl,nl,
+    write("######################################################"),!
 
 
 .
@@ -163,8 +164,8 @@ add_new_element(X,L1,L2) :- member(X,L1), concat([],L1,L2),!.
 
 
 get_all_new_elts(_,[],[]).
-get_all_new_elts((I,all(R,C)),[(I1,I2,R1)|Q],[(I2,C)|New]) :- I == I1, R == R1, get_all_new_elts((I,all(R,C)),Q, New).
-get_all_new_elts((I,all(R,C)),[_|Q],New) :- get_all_new_elts((I,all(R,C)),Q, New).
+get_all_new_elts((I,all(R,C)),[(I1,I2,R1)|Q],[(I2,C)|New]) :- I == I1, R == R1, get_all_new_elts((I,all(R,C)),Q, New),!.
+get_all_new_elts((I,all(R,C)),[_|Q],New) :- get_all_new_elts((I,all(R,C)),Q, New),!.
 
 
 /* Ajoute la nouvelle assertion de concepts a la bonne liste */
@@ -255,9 +256,6 @@ complete_some(Lie,Lpt,Li,Lu,Ls,Abr) :-
     /* ajout de des nouvelles assertions de roles */
     concat([(I,B,R)],Abr,Abr1), 
 
-    
- 
-    
     affiche_evolution_Abox(Ls, Lie, Lpt, Li, Lu, Abr, Ls1, Lie1,
     Lpt1, Li1, Lu1, Abr1),
 
@@ -360,20 +358,21 @@ transformation_or(Lie,Lpt,Li,Lu,Ls,Abr) :-
 
 
 /* Partie resolution */
-resolution([],[],[],[],_,_).
+resolution([],[],[],[],Ls,_):- member(_,Ls),test_clash(Ls),nl,write("La proposition donnee en entree n'est pas valide").
 resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- member(_,Lie), complete_some(Lie,Lpt,Li,Lu,Ls,Abr).
 resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- member(_,Li),transformation_and(Lie,Lpt,Li,Lu,Ls,Abr).
 resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- member(_,Lu),transformation_or(Lie,Lpt,Li,Lu,Ls,Abr).
 resolution(Lie,Lpt,Li,Lu,Ls,Abr) :- member(_,Lpt),deduction_all(Lie,Lpt,Li,Lu,Ls,Abr).
 
 
+
 /* TROISIEME ETAPE CALL */
 
 troisieme_etape(Abi,Abr) :-
 
-    tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),!,
+    tri_Abox(Abi,Lie,Lpt,Li,Lu,Ls),
 
     not(resolution(Lie,Lpt,Li,Lu,Ls,Abr)),
 
-    nl,write('Youpiiiiii, on a demontre la
-    proposition initiale !!!').
+    nl,write("La proposition donnee en entree est valide").
+

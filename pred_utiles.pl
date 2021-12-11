@@ -44,10 +44,3 @@ nombre(X,L1) :-
 /* enleve un element X de L et retourne L2 */
 enleve(X,[X|L],L) :-!.
 enleve(X,[Y|L],[Y|L2]) :- enleve(X,L,L2).
-
-/* lecture de plusieurs termes prolog */
-lecture([X|L]):-
-read(X),
-X \= fin, !,
-lecture(L).
-lecture([]).
