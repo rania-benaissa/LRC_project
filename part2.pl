@@ -36,15 +36,18 @@ concept(or(Concept1,Concept2)) :- concept(Concept1), concept(Concept2),!.
 concept(all(R,Concept)) :- role(R),concept(Concept),!.
 concept(some(R,Concept)) :- role(R),concept(Concept),!.
 
-
 /* verifier si les propositions sont correctes */
-is_correct_pro1(Instance,Concept) :- instance(Instance), concept(Concept).
-is_correct_pro1(Instance,_) :- not(instance(Instance)),nl, write("L'instance donnee est incorrecte"),instance(Instance).
-is_correct_pro1(_,Concept) :- not(concept(Concept)),nl, write("Le concept donne est incorrect"),nl,concept(Concept).
+is_correct_pro1(Instance,Concept) :- instance(Instance), concept(Concept),!.
+is_correct_pro1(Instance,_) :- not(instance(Instance)),nl, 
+                                write("L'instance donnee est incorrecte"),instance(Instance),!.
+is_correct_pro1(_,Concept) :- not(concept(Concept)),nl, write("Le concept donne est incorrect")
+                                ,nl,concept(Concept),!.
 
-is_correct_pro2(Concept1,Concept2) :- concept(Concept1), concept(Concept2).
-is_correct_pro2(Concept1,_) :- not(concept(Concept1)),nl,write("Le concept1 donne est incorrect"),nl,concept(Concept1).
-is_correct_pro2(_,Concept2) :- not(concept(Concept2)),nl,write("Le concept2 donne est incorrect"),nl,concept(Concept2).
+is_correct_pro2(Concept1,Concept2) :- concept(Concept1), concept(Concept2),!.
+is_correct_pro2(Concept1,_) :- not(concept(Concept1)),nl,
+                               write("Le concept1 donne est incorrect"),nl,concept(Concept1),!.
+is_correct_pro2(_,Concept2) :- not(concept(Concept2)),nl,
+                                write("Le concept2 donne est incorrect"),nl,concept(Concept2),!.
 
 /*tranformer un concept complexe avec sa definition */
 
@@ -74,8 +77,7 @@ demander_proposition1(Instance,Concept) :-
 
 acquisition_prop_type1(Abi,Abi1,Tbox) :- demander_proposition1(Instance,Concept),
                         is_correct_pro1(Instance,Concept),
-                        transform_all(Tbox,Abi,AbiA), /* si je change de base et que 
-                        dans la ABi de la base y a des concepts non atomiques*/
+                        transform_all(Tbox,Abi,AbiA),
                         transform_concept(Tbox,not(Concept),Prop_atomique),
                         nnf(Prop_atomique,Negation),
                         concat(AbiA,[(Instance,Negation)],Abi1).
@@ -92,8 +94,7 @@ demander_proposition2(Concept1,Concept2) :-
 
 acquisition_prop_type2(Abi,Abi1,Tbox) :- demander_proposition2(Concept1,Concept2),
                         is_correct_pro2(Concept1,Concept2),
-                        transform_all(Tbox,Abi,AbiA), /* si je change de base et que 
-                        dans la ABi de la base y a des concepts non atomiques*/
+                        transform_all(Tbox,Abi,AbiA), 
                         transform_concept(Tbox,Concept1,Prop_atomique1),
                         transform_concept(Tbox,Concept2,Prop_atomique2),
                         genere(Nom), /* on genere un nom car on veut une instantiation
