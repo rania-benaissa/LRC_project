@@ -39,7 +39,7 @@ concept(some(R,Concept)) :- role(R),concept(Concept),!.
 /* verifier si les propositions sont correctes */
 is_correct_pro1(Instance,Concept) :- instance(Instance), concept(Concept),!.
 is_correct_pro1(Instance,_) :- not(instance(Instance)),nl, 
-                                write("L'instance donnee est incorrecte"),instance(Instance),!.
+                        write('L\'instance donnee est incorrecte'),instance(Instance),!.
 is_correct_pro1(_,Concept) :- not(concept(Concept)),nl, write("Le concept donne est incorrect")
                                 ,nl,concept(Concept),!.
 
@@ -49,20 +49,25 @@ is_correct_pro2(Concept1,_) :- not(concept(Concept1)),nl,
 is_correct_pro2(_,Concept2) :- not(concept(Concept2)),nl,
                                 write("Le concept2 donne est incorrect"),nl,concept(Concept2),!.
 
-/*tranformer un concept complexe avec sa definition */
+/*tranformer un concept complexe par sa definition */
 
 transform_concept(_,Concept,Concept) :-  is_concept_atom(Concept).
 transform_concept(Tbox,Concept,X) :- is_concept_gen(Concept), member((Concept,X),Tbox).
 transform_concept(Tbox,not(Concept),not(X)) :- transform_concept(Tbox,Concept,X),!.
-transform_concept(Tbox,and(Concept1,Concept2),and(X1,X2)) :- transform_concept(Tbox,Concept1,X1), transform_concept(Tbox,Concept2,X2),!.
-transform_concept(Tbox,or(Concept1,Concept2),or(X1,X2)) :- transform_concept(Tbox,Concept1,X1), transform_concept(Tbox,Concept2,X2),!.
+
+transform_concept(Tbox,and(Concept1,Concept2),and(X1,X2)) :- transform_concept(Tbox,Concept1,X1),
+                                                         transform_concept(Tbox,Concept2,X2),!.
+
+transform_concept(Tbox,or(Concept1,Concept2),or(X1,X2)) :- transform_concept(Tbox,Concept1,X1), 
+                                                         transform_concept(Tbox,Concept2,X2),!.
+
 transform_concept(Tbox,all(R,Concept),all(R,X)) :- role(R), transform_concept(Tbox,Concept,X),!.
 transform_concept(Tbox,some(R,Concept),some(R,X)) :- role(R), transform_concept(Tbox,Concept,X),!.
 
-/*tranformer tous les  concepts complexes de l ABI  par leurs definition */
+/* tranformer tous les  concepts complexes de l ABI  par leurs definitions */
+
 transform_all(_,[],[]).
 transform_all(Tbox,[(I,C)|Q],[(I,Prop_atomique)|Abi1]) :- transform_concept(Tbox,C,Prop_atomique),
-                                                     
                                                           transform_all(Tbox,Q,Abi1).
                                                 
 
@@ -70,7 +75,7 @@ transform_all(Tbox,[(I,C)|Q],[(I,Prop_atomique)|Abi1]) :- transform_concept(Tbox
 
 /* On demande a l utilisateur la proposition de type : I:C */
 demander_proposition1(Instance,Concept) :-
-        write("Entrez l'instance :"),nl, 
+        write('Entrez l\'instance :'),nl, 
         read(Instance),nl,
         write('Entrez le concept :'),nl, 
         read(Concept).
@@ -117,8 +122,8 @@ saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox).
 
 saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox) :-
 nl,write('Entrez le numero du type de proposition que vous voulez demontrer :'),nl,nl,
-write("1 - Une instance donnee appartient a un concept donne."),nl,nl,
-write("2 - Deux concepts n'ont pas d'elements en commun."),nl,nl, read(R),nl,suite(R,Abi,Abi1,Tbox).
+write('1 - Une instance donnee appartient a un concept donne.'),nl,nl,
+write('2 - Deux concepts n\'ont pas d\'elements en commun.'),nl,nl,read(R),nl,suite(R,Abi,Abi1,Tbox).
 
 
 deuxieme_etape(Abi,Abi1,Tbox) :- saisie_et_traitement_prop_a_demontrer(Abi,Abi1,Tbox).
