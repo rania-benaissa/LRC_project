@@ -12,5 +12,5 @@ To have a complete overview of the knowledge base and possible inference, please
 
 ![example1](/example1.jpg)
 
-The resolution tree and the inference result are then printed :
+The resolution tree as well as the inference result are then printed :
 ![example1](/example2.jpg)
