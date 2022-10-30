@@ -6,7 +6,7 @@ To have a complete overview of the knowledge base and possible inference, please
 
 ## Usage
 
-1. Open terminal in project's directory and launch `Prolog`.
+1. Open terminal in the project's directory and launch `Prolog`.
 
 2. Launch the program by typing : ```program.``` and follow the instructions as shown in the example.
 
