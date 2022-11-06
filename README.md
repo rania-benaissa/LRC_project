@@ -2,7 +2,7 @@
  
 Inference engine written in `Prolog` for the _ALC_ description logic. 
 
-To have a complete overview of the knowledge base and possible inference, please refer to the [project description (in french)](ProjetLRC.pdf).
+To have a complete overview of the knowledge base and possible inference, please refer to the [project description (in french)](ProjetLRC.pdf) and  my [ project report (in french)](benaissa_zhang_rapport).
 
 ## Usage
 
